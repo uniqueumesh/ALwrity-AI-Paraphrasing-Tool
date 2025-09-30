@@ -50,6 +50,21 @@ def main():
             box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
             font-weight: bold;
         }
+        
+        /* Change checkbox color from red to green */
+        .stCheckbox > div > label > div[data-testid="stMarkdownContainer"] > p {
+            color: #4CAF50 !important;
+        }
+        
+        /* Style checkboxes to be green */
+        .stCheckbox > div > label > div[data-testid="stMarkdownContainer"] > p::before {
+            color: #4CAF50 !important;
+        }
+        
+        /* Custom checkbox styling */
+        .stCheckbox > div > label > div[data-testid="stMarkdownContainer"] {
+            color: #4CAF50 !important;
+        }
         </style>
     """, unsafe_allow_html=True)
 
@@ -90,7 +105,7 @@ def main():
                     st.markdown(f'<p style="color: #ff6b6b; font-weight: bold;">⚠️ Word count: {word_count}/800 (exceeds limit)</p>', unsafe_allow_html=True)
                 else:
                     st.markdown(f'<p style="color: #1976D2;">📊 Word count: {word_count}/800</p>', unsafe_allow_html=True)
-
+            
         with col2:
             paraphrasing_style = st.selectbox(
                 '🎨 Paraphrasing Style', 
@@ -113,11 +128,13 @@ def main():
                 value=True,
                 help="Keep the paraphrased text similar in length to original"
             )
+            
+            # Paraphrase button on the right side below additional options
+            st.markdown('<br>', unsafe_allow_html=True)
+            paraphrase_clicked = st.button('**🔄 Paraphrase Text**', use_container_width=True)
 
-    # Action Section
-    st.markdown('<h3 style="margin-top:2rem;">Ready to paraphrase your text?</h3>', unsafe_allow_html=True)
-    
-    if st.button('**🔄 Paraphrase Text**'):
+    # Button logic moved outside the expander but still accessible
+    if paraphrase_clicked:
         # Validation
         if not input_text.strip():
             st.error('**🫣 Please enter some text to paraphrase!**')
