@@ -8,11 +8,14 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def main():
-    # Set page configuration
+    # Set page configuration with custom theme
     st.set_page_config(
         page_title="AI Paraphrasing Tool",
         layout="wide",
+        initial_sidebar_state="collapsed"
     )
+    
+    # Remove temporary theme overrides
     
     # Custom CSS styling (same as Alwrity)
     st.markdown("""
@@ -51,20 +54,7 @@ def main():
             font-weight: bold;
         }
         
-        /* Change checkbox color from red to green */
-        .stCheckbox > div > label > div[data-testid="stMarkdownContainer"] > p {
-            color: #4CAF50 !important;
-        }
-        
-        /* Style checkboxes to be green */
-        .stCheckbox > div > label > div[data-testid="stMarkdownContainer"] > p::before {
-            color: #4CAF50 !important;
-        }
-        
-        /* Custom checkbox styling */
-        .stCheckbox > div > label > div[data-testid="stMarkdownContainer"] {
-            color: #4CAF50 !important;
-        }
+        /* No checkbox overrides */
         </style>
     """, unsafe_allow_html=True)
 
