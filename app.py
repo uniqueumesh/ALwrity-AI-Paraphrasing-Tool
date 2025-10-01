@@ -3,6 +3,8 @@ import google.generativeai as genai
 import os
 import re
 import html
+import json
+import streamlit.components.v1 as components
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -139,43 +141,77 @@ def main():
                 
                 if paraphrased_text:
                     st.session_state['paraphrased_text'] = paraphrased_text
-                    st.markdown('<h4 style="margin-top:1.5rem; color:#1976D2;">✨ Paraphrased Text</h4>', unsafe_allow_html=True)
-                    
-                    # Safely escape the AI-generated text to prevent HTML/Markdown interpretation
-                    safe_text = html.escape(paraphrased_text)
-
-                    # Display the text inside a styled container using a <pre> tag
-                    # This prevents Streamlit from auto-formatting parts of the text as code
-                    st.markdown(f"""
-                    <div style="
-                        background-color: #f8f9fa;
-                        border: 1px solid #dee2e6;
-                        border-radius: 8px;
-                        padding: 20px;
-                        margin: 10px 0;
-                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                        color: #333;
-                    ">
-                        <pre style="
-                            font-family: inherit; 
-                            font-size: 16px;
-                            line-height: 1.6;
-                            color: inherit; 
-                            background: none; 
-                            border: none; 
-                            padding: 0; 
-                            margin: 0; 
-                            white-space: pre-wrap; 
-                            word-wrap: break-word;
-                        ">{safe_text}</pre>
-                    </div>
-                    """, unsafe_allow_html=True)
-                    
-                    # Copy button
-                    if st.button("📋 Copy to Clipboard", help="Click to copy the paraphrased text"):
-                        st.write("💡 Use Ctrl+C to copy the text above")
                 else:
                     st.error("💥 **Failed to paraphrase text. Please try again!**")
+                    if 'paraphrased_text' in st.session_state:
+                        del st.session_state['paraphrased_text'] # Clear previous result on failure
+
+    # Display the paraphrased text from session state if it exists
+    if 'paraphrased_text' in st.session_state:
+        st.markdown('<h4 style="margin-top:1.5rem; color:#1976D2;">✨ Paraphrased Text</h4>', unsafe_allow_html=True)
+        
+        paraphrased_text = st.session_state['paraphrased_text']
+        # Safely escape the text for HTML display
+        safe_text = html.escape(paraphrased_text)
+        # Safely escape the text for JavaScript injection
+        js_text = json.dumps(paraphrased_text)
+
+        # Display the text inside a styled container
+        st.markdown(f"""
+        <div style="
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 10px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            color: #333;
+        ">
+            <pre style="
+                font-family: inherit; 
+                font-size: 16px;
+                line-height: 1.6;
+                color: inherit; 
+                background: none; 
+                border: none; 
+                padding: 0; 
+                margin: 0; 
+                white-space: pre-wrap; 
+                word-wrap: break-word;
+            ">{safe_text}</pre>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Implement a robust copy-to-clipboard button using components.html
+        components.html(f"""
+        <script>
+        function copyToClipboard() {{
+            const textToCopy = {js_text}; // Text is directly injected here
+            navigator.clipboard.writeText(textToCopy).then(() => {{
+                const copyButton = document.getElementById('copy-button');
+                copyButton.innerText = 'Copied!';
+                setTimeout(() => {{
+                    copyButton.innerText = '📋 Copy Text';
+                }}, 2000);
+            }}, (err) => {{
+                console.error('Failed to copy text: ', err);
+                alert('Failed to copy text. Your browser might not support this feature or requires permissions.');
+            }});
+        }}
+        </script>
+        
+        <button id="copy-button" onclick="copyToClipboard()" style="
+            background: #1565C0;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+        ">📋 Copy Text</button>
+        """, height=60)
 
 def count_words(text):
     """Count words in the given text"""
