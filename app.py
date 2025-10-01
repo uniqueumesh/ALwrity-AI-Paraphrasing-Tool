@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def main():
-    # Set page configuration with custom theme
+    # Set page configuration with a custom theme to make checkboxes green
     st.set_page_config(
         page_title="AI Paraphrasing Tool",
         layout="wide",
@@ -23,6 +23,11 @@ def main():
     # Custom CSS styling (same as Alwrity)
     st.markdown("""
         <style>
+        /* Set the primary color for checkboxes and other widgets */
+        :root {
+            --primary-color: #008000;
+        }
+
         ::-webkit-scrollbar-track {
         background: #e1ebf9;
         }
@@ -56,10 +61,51 @@ def main():
             box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
             font-weight: bold;
         }
-        
-        /* No checkbox overrides */
+
+        /* Force Streamlit checkbox to green */
+        .stCheckbox [role="checkbox"] {
+            box-shadow: 0 0 0 1px #008000 inset !important;
+            border-color: #008000 !important;
+        }
+        .stCheckbox [role="checkbox"][aria-checked="true"] {
+            background-color: rgba(0,128,0,0.12) !important;
+            box-shadow: 0 0 0 1px #008000 inset !important;
+            border-color: #008000 !important;
+        }
+        .stCheckbox [role="checkbox"] svg {
+            color: #008000 !important;
+            fill: #008000 !important;
+            stroke: #008000 !important;
+        }
+        .stCheckbox [role="checkbox"] svg path {
+            fill: #008000 !important;
+            stroke: #008000 !important;
+        }
         </style>
     """, unsafe_allow_html=True)
+
+    # Enforce green checkbox via JS on rerenders
+    components.html(f"""
+    <script>
+      (function() {{
+        const GREEN = '#008000';
+        function paint() {{
+          document.querySelectorAll('.stCheckbox [role="checkbox"] svg').forEach(svg => {{
+            svg.style.color = GREEN;
+            svg.style.fill = GREEN;
+            svg.style.stroke = GREEN;
+            svg.querySelectorAll('path').forEach(p => {{
+              try {{ p.setAttribute('fill', GREEN); p.setAttribute('stroke', GREEN); }} catch(e) {{}}
+            }});
+          }});
+        }}
+        const obs = new MutationObserver(paint);
+        obs.observe(document.body, {{ subtree: true, childList: true, attributes: true }});
+        window.addEventListener('load', paint);
+        setTimeout(paint, 100);
+      }})();
+    </script>
+    """, height=0)
 
     # Hide top header line
     hide_decoration_bar_style = '<style>header {visibility: hidden;}</style>'
