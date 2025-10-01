@@ -2,6 +2,7 @@ import streamlit as st
 import google.generativeai as genai
 import os
 import re
+import html
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -139,7 +140,36 @@ def main():
                 if paraphrased_text:
                     st.session_state['paraphrased_text'] = paraphrased_text
                     st.markdown('<h4 style="margin-top:1.5rem; color:#1976D2;">✨ Paraphrased Text</h4>', unsafe_allow_html=True)
-                    st.markdown(paraphrased_text)
+                    
+                    # Safely escape the AI-generated text to prevent HTML/Markdown interpretation
+                    safe_text = html.escape(paraphrased_text)
+
+                    # Display the text inside a styled container using a <pre> tag
+                    # This prevents Streamlit from auto-formatting parts of the text as code
+                    st.markdown(f"""
+                    <div style="
+                        background-color: #f8f9fa;
+                        border: 1px solid #dee2e6;
+                        border-radius: 8px;
+                        padding: 20px;
+                        margin: 10px 0;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                        color: #333;
+                    ">
+                        <pre style="
+                            font-family: inherit; 
+                            font-size: 16px;
+                            line-height: 1.6;
+                            color: inherit; 
+                            background: none; 
+                            border: none; 
+                            padding: 0; 
+                            margin: 0; 
+                            white-space: pre-wrap; 
+                            word-wrap: break-word;
+                        ">{safe_text}</pre>
+                    </div>
+                    """, unsafe_allow_html=True)
                     
                     # Copy button
                     if st.button("📋 Copy to Clipboard", help="Click to copy the paraphrased text"):
