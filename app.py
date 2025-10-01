@@ -28,6 +28,8 @@ def main():
             --primary-color: #008000;
         }
 
+        /* Reverted spacing overrides - back to default */
+
         ::-webkit-scrollbar-track {
         background: #e1ebf9;
         }
@@ -107,8 +109,8 @@ def main():
     </script>
     """, height=0)
 
-    # Hide top header line
-    hide_decoration_bar_style = '<style>header {visibility: hidden;}</style>'
+    # Hide top header completely and remove reserved space
+    hide_decoration_bar_style = '<style>[data-testid="stHeader"], header {display: none !important;} .stApp{padding-top:0 !important;} [data-testid="stAppViewContainer"]{padding-top:0 !important; margin-top:0 !important;}</style>'
     st.markdown(hide_decoration_bar_style, unsafe_allow_html=True)
 
     # Hide footer
