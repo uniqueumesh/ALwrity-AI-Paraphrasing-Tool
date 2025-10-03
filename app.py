@@ -120,12 +120,7 @@ def main():
     # Header Section
     st.title("🔄 AI Paraphrasing Tool")
 
-    # API Configuration Section (Expandable - Collapsed by default)
-    with st.expander("API Configuration 🔑", expanded=False):
-        st.markdown('''If the default Gemini API key is unavailable or exceeds its limits, you can provide your own API key below.<br>
-        <a href="https://aistudio.google.com/app/apikey" target="_blank">Get Gemini API Key</a>
-        ''', unsafe_allow_html=True)
-        user_gemini_api_key = st.text_input("Gemini API Key", type="password", help="Paste your Gemini API Key here if you have one. Otherwise, the tool will use the default key if available.")
+    # (BYOK removed) The app now uses a server-side key; no user API key input
 
     # Main Input Section (Expandable - Open by default)
     with st.expander("**PRO-TIP** - Enter your text and choose paraphrasing style for best results.", expanded=True):
@@ -184,7 +179,7 @@ def main():
         else:
             with st.spinner("Paraphrasing your text..."):
                 paraphrased_text = generate_paraphrase(
-                    input_text, paraphrasing_style, user_gemini_api_key, preserve_tone, maintain_length
+                    input_text, paraphrasing_style, None, preserve_tone, maintain_length
                 )
                 
                 if paraphrased_text:
