@@ -6,6 +6,7 @@ import html
 import json
 import streamlit.components.v1 as components
 from dotenv import load_dotenv
+from tts_service import fetch_tts_mp3
 
 # Load environment variables
 load_dotenv()
@@ -225,6 +226,46 @@ def main():
         </div>
         """, unsafe_allow_html=True)
         
+        # Speaker button: attempts server TTS first; if not ready, falls back to browser SpeechSynthesis
+        tts_bytes = fetch_tts_mp3(paraphrased_text, voice=None)
+        if tts_bytes:
+            import base64
+            b64 = base64.b64encode(tts_bytes).decode("utf-8")
+            audio_data_url = f"data:audio/mpeg;base64,{b64}"
+            components.html(f"""
+            <script>
+              let audioEl = null; let isPlaying = false;
+              function togglePlay() {{
+                if (!audioEl) {{ audioEl = new Audio('{audio_data_url}'); }}
+                if (isPlaying) {{ audioEl.pause(); isPlaying = false; document.getElementById('speak-btn').innerText = '🔊 Listen'; }}
+                else {{ audioEl.play(); isPlaying = true; document.getElementById('speak-btn').innerText = '⏸ Pause'; }}
+              }}
+            </script>
+            <button id="speak-btn" onclick="togglePlay()" style="
+                background: #1565C0; color: white; border: none; padding: 10px 20px; border-radius: 8px;
+                cursor: pointer; font-size: 16px; margin-top: 10px; transition: background-color 0.3s ease;">
+              🔊 Listen
+            </button>
+            """, height=80)
+        else:
+            # Fallback: use browser SpeechSynthesis immediately
+            safe_js_text = json.dumps(paraphrased_text)
+            components.html(f"""
+            <script>
+              let utter = null; let speaking = false;
+              function toggleSpeak() {{
+                if (!utter) {{ utter = new SpeechSynthesisUtterance({safe_js_text}); }}
+                if (speaking) {{ speechSynthesis.cancel(); speaking = false; document.getElementById('speak-btn').innerText = '🔊 Listen'; }}
+                else {{ speechSynthesis.cancel(); speechSynthesis.speak(utter); speaking = true; document.getElementById('speak-btn').innerText = '⏸ Pause'; }}
+              }}
+            </script>
+            <button id="speak-btn" onclick="toggleSpeak()" style="
+                background: #1565C0; color: white; border: none; padding: 10px 20px; border-radius: 8px;
+                cursor: pointer; font-size: 16px; margin-top: 10px; transition: background-color 0.3s ease;">
+              🔊 Listen
+            </button>
+            """, height=80)
+
         # Implement a robust copy-to-clipboard button using components.html
         components.html(f"""
         <script>
