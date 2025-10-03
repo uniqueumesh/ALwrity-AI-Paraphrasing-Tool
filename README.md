@@ -1,16 +1,16 @@
 # AI Paraphrasing Tool
 
-A professional AI paraphrasing tool built with Streamlit and Google Gemini AI. Features the same clean design as Alwrity with advanced paraphrasing capabilities.
+A fast, accessible paraphrasing tool built with Streamlit and Google Gemini. It now uses a secure backend key (no BYOK in the UI) and includes a one‑click “Listen” feature to read results aloud.
 
 ## Features
 
-- 🔄 **AI Paraphrasing**: Powered by Google Gemini 2.0 Flash
-- 📝 **800-Word Limit**: Real-time word counting with validation
-- 🎨 **5 Paraphrasing Styles**: Balanced, Formal, Casual, Concise, Detailed
-- 🎯 **Advanced Options**: Preserve tone, maintain length
-- 📊 **Professional UI**: Clean design matching Alwrity style
-- 🔐 **Secure API**: Password-protected API key input
-- 📋 **Easy Copy**: One-click copy to clipboard
+- 🔄 **AI Paraphrasing**: Gemini‑powered rephrasing
+- 📝 **800‑Word Limit**: Live counter + validation
+- 🎨 **5 Styles**: Balanced, Formal, Casual, Concise, Detailed
+- 🎯 **Options**: Preserve tone, maintain similar length
+- 🔊 **Listen**: Text‑to‑Audio via AssemblyAI (no download); browser TTS fallback
+- 📋 **Copy Text**: One‑click copy
+- 🔐 **Secure**: Server‑side API keys only (no user key input)
 
 ## Quick Start
 
@@ -19,15 +19,9 @@ A professional AI paraphrasing tool built with Streamlit and Google Gemini AI. F
 pip install -r requirements.txt
 ```
 
-### 2. Get Gemini API Key
-- Visit [Google AI Studio](https://aistudio.google.com/app/apikey)
-- Create a free API key
-
-### 3. Set Up Environment
-Create `.env` file:
-```
-GEMINI_API_KEY=your_api_key_here
-```
+### 2. Set Secrets / Environment
+- `GEMINI_API_KEY`: your Gemini API key (server‑side)
+- `ASSEMBLYAI_API_KEY`: your AssemblyAI key (server‑side)
 
 ### 4. Run the Application
 ```bash
@@ -36,12 +30,12 @@ streamlit run app.py
 
 ## How to Use
 
-1. **Enter Text**: Type or paste your text (max 800 words)
-2. **Choose Style**: Select from 5 paraphrasing styles
-3. **Configure Options**: Preserve tone and maintain length
-4. **Add API Key**: Enter your Gemini API key in the expandable section
-5. **Click Paraphrase**: Get your paraphrased text instantly
-6. **Copy Results**: Use the copy button to copy the paraphrased text
+1. **Enter Text**: Paste up to 800 words
+2. **Choose Style**: Pick one of 5 styles
+3. **Options**: Toggle Preserve Tone / Maintain Length
+4. **Paraphrase**: Click Paraphrase Text
+5. **Listen**: Click 🔊 Listen to hear the result (no download)
+6. **Copy**: Use Copy Text to copy the result
 
 ## Paraphrasing Styles
 
@@ -58,32 +52,29 @@ streamlit run app.py
 
 ## Files
 
-- `app.py` - Main Streamlit application
-- `requirements.txt` - Python dependencies
-- `env_example.txt` - Environment variables template
-- `TOOL_CREATION_PLAN.md` - Development plan and specifications
+- `app.py` – Main Streamlit app
+- `tts_service.py` – AssemblyAI TTS helper (server‑side)
+- `requirements.txt` – Python dependencies
 
 ## Technical Details
 
-- **Framework**: Streamlit with wide layout
-- **AI Model**: Google Gemini 2.0 Flash Experimental
-- **Styling**: Custom CSS matching Alwrity design
-- **Dependencies**: Minimal (3 packages only)
-- **Error Handling**: Comprehensive error management
+- **Framework**: Streamlit
+- **AI**: Google Gemini (server‑side key)
+- **TTS**: AssemblyAI (MP3 bytes; cached)
+- **Playback**: Hidden HTML5 audio; SpeechSynthesis fallback
+- **Caching**: TTS cached by result text; reduces cost/latency
 
 ## Requirements
 
-- Python 3.7 or higher
+- Python 3.8+
 - Internet connection
-- Google Gemini API key (free tier available)
+- Server‑side secrets: `GEMINI_API_KEY`, `ASSEMBLYAI_API_KEY`
 
-## UI Features
+## UI Notes
 
-- **Custom Scrollbars**: Blue-themed scrollbars
-- **Professional Buttons**: Styled buttons with shadows
-- **Expandable Sections**: Clean organization
-- **Real-time Validation**: Word count and limit checking
-- **Responsive Design**: Works on all screen sizes
+- Result shown in a clean container (plain text)
+- Single 🔊 Listen button (no download)
+- Copy Text button
 
 ---
 
@@ -91,4 +82,4 @@ streamlit run app.py
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-**Professional AI Paraphrasing with Alwrity-Style Design**
+**AI Paraphrasing with fast, accessible listening**
